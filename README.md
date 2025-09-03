@@ -1,5 +1,30 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Supabase setup
+
+This project uses Supabase for authentication and data. To run locally:
+
+1. Create a Supabase project at https://app.supabase.com.
+2. From your project dashboard go to Settings → API and copy:
+	- Project URL (use as `NEXT_PUBLIC_SUPABASE_URL`)
+	- anon public key (use as `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+3. Copy `.env.local.example` to `.env.local` and paste the values.
+
+Install the Supabase client dependency if not already installed:
+
+```powershell
+# Windows PowerShell
+cd c:\polling-app
+npm.cmd install @supabase/supabase-js
+```
+
+Then start the dev server:
+
+```powershell
+npm.cmd run dev
+```
+
+
 ## Getting Started
 
 First, run the development server:
