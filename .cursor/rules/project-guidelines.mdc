@@ -1,0 +1,45 @@
+---
+rule: Always
+---
+
+# Project Guidelines for the Polling App
+
+## 1. Project Overview
+
+This is a web-based polling application that allows users to create, view, and vote on polls. Key features include user authentication (registration and login), poll creation, viewing a list of polls, voting on a poll, and seeing poll results.
+
+## 2. Tech Stack
+
+- **Framework**: Next.js 15.5.0 (with App Router and Turbopack)
+- **Language**: TypeScript
+- **UI Library**: React 19.1.0
+- **UI Components**: shadcn/ui, built on top of Radix UI and Tailwind CSS.
+- **Styling**: Tailwind CSS. Use `tailwind-merge` and `clsx` for conditional classes.
+- **Database**: Supabase (PostgreSQL).
+- **Authentication**: Supabase Auth.
+- **Linting**: ESLint with `eslint-config-next`.
+
+## 3. Project Structure
+
+- **`app/`**: Contains all the routes for the application, following the Next.js App Router structure.
+- **`components/`**: Contains reusable React components.
+- **`lib/`**: Contains shared logic, utilities, and configurations.
+- **`public/`**: Contains static assets like images and icons.
+- **`supabase/`**: Contains database migrations.
+
+## 4. Coding Guidelines
+
+- **TypeScript**: Use TypeScript for all new code.
+- **React**: Write functional components with Hooks.
+- **Components**: Use `shadcn/ui` components from `components/ui/`.
+- **Styling**: Use Tailwind CSS utility classes.
+- **Database**: Interact with Supabase via the client in `lib/supabase.ts`.
+- **Authentication**: Use Supabase Auth and the `AuthContext`.
+- **Naming Conventions**: `PascalCase` for components and types, `camelCase` for variables/functions, `kebab-case` for files.
+
+## 5. Key Files for Context
+
+You can use the `@` symbol to reference these files for more context:
+- `@file:lib/types/database.ts` for database schema.
+- `@file:tailwind.config.ts` for styling.
+- `@file:lib/supabase.ts` for the Supabase client.
