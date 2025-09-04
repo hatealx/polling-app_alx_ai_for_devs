@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { getPolls, vote, deletePoll } from '@/lib/db';
 import { Poll } from '@/lib/types/polls';
 import { useAuth } from '@/lib/auth-context';
+import { PlusCircle, Trash2, Edit, Vote as VoteIcon } from 'lucide-react';
 
 export default function PollsPage() {
   const router = useRouter();
@@ -69,7 +70,10 @@ export default function PollsPage() {
       <div className="flex justify-between items-center mb-10">
         <h1 className="text-4xl font-bold tracking-tight">Polls</h1>
         <Link href="/polls/create">
-          <Button size="lg">Create New Poll</Button>
+          <Button size="lg">
+            <PlusCircle className="mr-2 h-5 w-5" />
+            Create New Poll
+          </Button>
         </Link>
       </div>
 
@@ -108,6 +112,7 @@ export default function PollsPage() {
                         onClick={() => handleVote(poll.id, index)}
                         disabled={!user}
                       >
+                        <VoteIcon className="mr-2 h-4 w-4" />
                         Vote
                       </Button>
                     </div>
@@ -116,13 +121,22 @@ export default function PollsPage() {
               </div>
             </CardContent>
             {user && poll.created_by === user.id && (
-              <div className="px-6 pb-6">
+              <div className="px-6 pb-6 flex gap-2">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => router.push(`/polls/${poll.id}/edit`)}
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
                 <Button
                   variant="destructive"
                   className="w-full"
                   onClick={() => handleDelete(poll.id)}
                 >
-                  Delete Poll
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
                 </Button>
               </div>
             )}

@@ -30,6 +30,13 @@ export interface CreatePollData {
   ends_at?: string;
 }
 
+export interface UpdatePollData {
+  title: string;
+  description?: string;
+  options: string[];
+  ends_at?: string;
+}
+
 export interface VoteData {
   poll_id: string;
   option_index: number;

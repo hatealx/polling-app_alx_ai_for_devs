@@ -1,5 +1,11 @@
 import { supabase } from './supabase';
-import { CreatePollData, Poll, Vote, VoteData } from './types/polls';
+import {
+  CreatePollData,
+  Poll,
+  UpdatePollData,
+  Vote,
+  VoteData,
+} from './types/polls';
 
 export async function createPoll(data: CreatePollData) {
   const { title, description, options, ends_at } = data;
@@ -21,6 +27,15 @@ export async function createPoll(data: CreatePollData) {
 
   if (error) throw error;
   return poll as Poll;
+}
+
+export async function updatePoll(id: string, data: UpdatePollData) {
+  const { error } = await (supabase as any)
+    .from("polls")
+    .update(data)
+    .eq("id", id);
+
+  if (error) throw error;
 }
 
 export async function getPolls() {
