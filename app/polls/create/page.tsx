@@ -8,26 +8,42 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { createPoll } from '@/lib/db';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/lib/auth-context';
+import { Plus, Trash2, Save, X, Loader2 } from 'lucide-react';
 
+/**
+ * Page component for creating a new poll.
+ * It provides a form for users to enter a title, description, and at least two options.
+ * The form includes validation and user feedback during submission.
+ */
 export default function CreatePollPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  // Initialize with two empty strings for the first two options.
   const [options, setOptions] = useState(['', '']);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // Protect the route by redirecting unauthenticated users to the login page.
     if (!loading && !user) {
       router.push('/auth/login');
     }
   }, [user, loading, router]);
 
+  /**
+   * Adds a new, empty option field to the form.
+   */
   const addOption = () => {
     setOptions([...options, '']);
   };
 
+  /**
+   * Removes an option field from the form.
+   * Ensures that a minimum of two options is always maintained.
+   * @param {number} index - The index of the option to remove.
+   */
   const removeOption = (index: number) => {
     if (options.length <= 2) return;
     const newOptions = [...options];
@@ -35,16 +51,22 @@ export default function CreatePollPage() {
     setOptions(newOptions);
   };
 
+  /**
+   * Handles the form submission for creating a new poll.
+   * It performs validation, calls the database function, and handles success or error states.
+   * @param {React.FormEvent} e - The form submission event.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    // Validation
+    // --- Form Validation ---
     if (!title.trim()) {
       setError('Title is required');
       return;
     }
 
+    // Filter out empty option fields before validation and submission.
     const validOptions = options.filter(opt => opt.trim());
     if (validOptions.length < 2) {
       setError('At least two options are required');
@@ -58,6 +80,7 @@ export default function CreatePollPage() {
         description: description.trim() || undefined,
         options: validOptions
       });
+      // On success, redirect to the main polls page to see the new poll.
       router.push('/polls');
       router.refresh();
     } catch (err) {
@@ -116,7 +139,7 @@ export default function CreatePollPage() {
                 </label>
                 <div className="space-y-2">
                   {options.map((option, index) => (
-                    <div key={index} className="flex gap-2">
+                    <div key={index} className="flex items-center gap-2">
                       <Input
                         placeholder={`Option ${index + 1}`}
                         value={option}
@@ -130,11 +153,13 @@ export default function CreatePollPage() {
                       {options.length > 2 && (
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="ghost"
+                          size="icon"
                           onClick={() => removeOption(index)}
                           disabled={isSubmitting}
+                          className="text-muted-foreground"
                         >
-                          Remove
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       )}
                     </div>
@@ -147,6 +172,7 @@ export default function CreatePollPage() {
                   onClick={addOption}
                   disabled={isSubmitting}
                 >
+                  <Plus className="mr-2 h-4 w-4" />
                   Add Option
                 </Button>
               </div>
@@ -157,7 +183,17 @@ export default function CreatePollPage() {
 
               <div className="flex gap-4">
                 <Button type="submit" className="flex-1" disabled={isSubmitting}>
-                  {isSubmitting ? 'Creating...' : 'Create Poll'}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Create Poll
+                    </>
+                  )}
                 </Button>
                 <Button
                   type="button"
@@ -166,6 +202,7 @@ export default function CreatePollPage() {
                   onClick={() => router.back()}
                   disabled={isSubmitting}
                 >
+                  <X className="mr-2 h-4 w-4" />
                   Cancel
                 </Button>
               </div>

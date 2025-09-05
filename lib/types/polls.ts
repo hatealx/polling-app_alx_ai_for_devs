@@ -13,6 +13,7 @@ export interface Poll {
   user_vote?: number;
   /** Map of option index -> vote count (keys are strings because JSON object keys are strings) */
   options_count?: Record<string, number>;
+  votes?: { user_id: string, option_index: number }[];
 }
 
 export interface Vote {

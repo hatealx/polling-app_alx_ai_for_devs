@@ -10,6 +10,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/lib/auth-context';
 import { Poll } from '@/lib/types/polls';
 
+/**
+ * Page component for editing an existing poll.
+ * It fetches the current poll data, populates a form with it, and handles
+ * the submission of updated poll details. It also ensures that only the
+ * creator of the poll can access this page.
+ */
 export default function EditPollPage() {
   const router = useRouter();
   const params = useParams();
@@ -25,21 +31,26 @@ export default function EditPollPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // Redirect unauthenticated users.
     if (!authLoading && !user) {
       router.push('/auth/login');
     }
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (pollId) {
+    // Fetch the poll data when the component mounts or pollId changes.
+    if (pollId && user) { // Ensure user is available to check ownership
       getPoll(pollId)
         .then(data => {
+          // --- Authorization Check ---
+          // Verify that the logged-in user is the creator of the poll.
+          // This is a crucial client-side check to prevent unauthorized edits.
           if (data.created_by !== user?.id) {
-            // Redirect if the user is not the creator
-            router.push('/polls');
+            router.push('/polls'); // Redirect if not the owner.
             return;
           }
           setPoll(data);
+          // Populate form fields with the existing poll data.
           setTitle(data.title);
           setDescription(data.description || '');
           setOptions(data.options);
@@ -52,10 +63,18 @@ export default function EditPollPage() {
     }
   }, [pollId, user, router]);
 
+  /**
+   * Adds a new, empty option field to the form.
+   */
   const addOption = () => {
     setOptions([...options, '']);
   };
 
+  /**
+   * Removes an option field from the form.
+   * Ensures that a minimum of two options is always maintained.
+   * @param {number} index - The index of the option to remove.
+   */
   const removeOption = (index: number) => {
     if (options.length <= 2) return;
     const newOptions = [...options];
@@ -63,11 +82,16 @@ export default function EditPollPage() {
     setOptions(newOptions);
   };
 
+  /**
+   * Handles the form submission to update the poll.
+   * It performs validation and calls the database update function.
+   * @param {React.FormEvent} e - The form submission event.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    // Validation
+    // --- Form Validation ---
     if (!title.trim()) {
       setError('Title is required');
       return;
