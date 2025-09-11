@@ -68,9 +68,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password,
       });
+
+      if (error) {
+        console.error('Sign-in error:', error.message);
+      }
+
       return { error, success: !error };
     } catch (error) {
-      return { error: error as Error, success: false };
+      console.error('Unexpected error during sign-in:', error);
+      const errorMessage =
+        error instanceof Error ? error : new Error(String(error));
+      return { error: errorMessage, success: false };
     }
   };
 
@@ -86,9 +94,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password,
       });
+
+      if (error) {
+        console.error('Sign-up error:', error.message);
+      }
+
       return { error, success: !error };
     } catch (error) {
-      return { error: error as Error, success: false };
+      console.error('Unexpected error during sign-up:', error);
+      const errorMessage =
+        error instanceof Error ? error : new Error(String(error));
+      return { error: errorMessage, success: false };
     }
   };
 
