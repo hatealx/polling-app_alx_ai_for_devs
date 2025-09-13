@@ -8,6 +8,17 @@ import {
 } from './types/polls';
 
 /**
+ * Retrieves the authenticated user's ID.
+ * @returns {Promise<string>} The user's ID.
+ * @throws {Error} If the user is not authenticated.
+ */
+async function getUserId() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+  return user.id;
+}
+
+/**
  * Creates a new poll in the database.
  * It ensures the user is authenticated before creating the poll.
  * The `created_by` field is automatically set to the authenticated user's ID.
@@ -17,9 +28,7 @@ import {
  */
 export async function createPoll(data: CreatePollData) {
   const { title, description, options, ends_at } = data;
-
-  const user = (await supabase.auth.getUser()).data.user;
-  if (!user) throw new Error('Not authenticated');
+  const userId = await getUserId();
 
   const { data: poll, error } = await (supabase as any)
     .from('polls')
@@ -28,7 +37,7 @@ export async function createPoll(data: CreatePollData) {
       description,
       options,
       ends_at,
-      created_by: user.id,
+      created_by: userId,
     })
     .select()
     .single();
@@ -111,10 +120,7 @@ export async function getPoll(id: string) {
  */
 export async function vote(data: VoteData) {
   const { poll_id, option_index } = data;
-  const user = (await supabase.auth.getUser()).data.user;
-  const user_id = user?.id;
-
-  if (!user_id) throw new Error('Not authenticated');
+  const user_id = await getUserId();
 
   // Check if the user has already voted on this poll.
   const { data: existingVote } = await supabase
